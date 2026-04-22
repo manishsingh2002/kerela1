@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Surat → Kerala | Premium Travel Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ===== PREMIUM LIGHT THEME VARIABLES ===== */
+:root {
+  --primary: #059669; 
+  --primary-light: #ecfdf5;
+  --primary-mid: #34d399;
+  --primary-dark: #064e3b;
+  
+  --gold: #d97706; 
+  --gold-light: #fef3c7;
+  
+  --blue: #0284c7; 
+  --blue-light: #e0f2fe;
+
+  --bg-page: #f8fafc; 
+  --bg-card: #ffffff;
+  
+  --text-heading: #0f172a;
+  --text-main: #334155;
+  --text-muted: #64748b;
+  
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  
+  --radius: 20px;
+  --radius-sm: 12px;
+  
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 40px -10px rgba(5, 150, 105, 0.1);
+
+  --serif: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --sans: 'DM Sans', sans-serif;
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
+body {
+  font-family: var(--sans);
+  background: var(--bg-page);
+  color: var(--text-main);
+  overflow-x: hidden;
+  line-height: 1.7;
+  width: 100%;
+}
+
+/* ===== BACKGROUND PATTERNS ===== */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -2;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(5, 150, 105, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(217, 119, 6, 0.04) 0%, transparent 40%);
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-page); }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ===== PROGRESS BAR ===== */
+#progress-container { width: 100%; height: 4px; background: transparent; position: fixed; top: 0; z-index: 2000; }
+#progress-bar { height: 100%; background: linear-gradient(90deg, var(--blue), var(--primary), var(--gold)); width: 0%; transition: width 0.1s; }
+
+/* ===== NAVBAR ===== */
+#navbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 1rem 2rem; transition: all 0.4s ease;
+  background: transparent;
+}
+#navbar.scrolled {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); padding: 0.8rem 2rem;
+}
+.nav-inner { max-width: 1300px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { font-family: var(--serif); font-size: 1.5rem; color: var(--primary-dark); font-weight: 700; letter-spacing: 0.02em; text-decoration: none; white-space: nowrap; }
+.nav-links { display: flex; gap: 0.5rem; align-items: center; list-style: none; }
+.nav-links a {
+  color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 600;
+  letter-spacing: 0.05em; text-transform: uppercase; padding: 0.5rem 1rem; border-radius: 8px; transition: all 0.3s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--primary-dark); background: var(--primary-light); }
+.btn-pdf {
+  background: var(--primary); color: white; border: none; cursor: pointer;
+  font-family: var(--sans); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 0.6rem 1.2rem; border-radius: 100px;
+  transition: all 0.3s; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-sm);
+}
+.btn-pdf:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+/* ===== HERO ===== */
+#hero {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 8rem 1.5rem 5rem; text-align: center; position: relative; overflow: hidden;
+  background: var(--bg-card);
+}
+.hero-bg {
+  position: absolute; inset: 0; z-index: 0;
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 40px 40px; opacity: 0.6;
+}
+.hero-gradient { position: absolute; inset: 0; z-index: 0; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, var(--bg-page) 100%); }
+.hero-waves { position: absolute; bottom: 0; left: 0; right: 0; height: 100px; overflow: hidden; z-index: 1;}
+.hero-waves svg { position: absolute; bottom: 0; width: 200%; animation: wave 20s linear infinite; }
+.hero-waves svg path { fill: var(--bg-page); }
+.hero-waves svg:nth-child(2) { animation-delay: -10s; opacity: 0.5; }
+@keyframes wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.hero-content { position: relative; z-index: 2; max-width: 1000px; width: 100%; }
+.hero-label {
+  display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--primary-dark); margin-bottom: 2rem;
+  padding: 0.5rem 1.5rem; border: 1px solid rgba(5, 150, 105, 0.2); border-radius: 100px;
+  background: var(--primary-light); box-shadow: var(--shadow-sm); animation: fadeInDown 0.8s ease both;
+}
+.hero-label::before { content: '✦'; color: var(--gold); }
+.hero-title {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(3rem, 10vw, 6.5rem);
+  font-weight: 700; line-height: 1.05; color: var(--text-heading); margin-bottom: 1.5rem;
+  animation: fadeInUp 0.9s 0.2s ease both;
+}
+.hero-title span { color: var(--primary); font-style: italic; display: block; }
+.hero-subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight: 400; color: var(--text-muted);
+  margin-bottom: 3rem; line-height: 1.8; max-width: 750px; margin-left: auto; margin-right: auto;
+  animation: fadeInUp 0.9s 0.35s ease both;
+}
+.hero-stats { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; animation: fadeInUp 0.9s 0.5s ease both; }
+.stat-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 1.5rem; text-align: center; flex: 1; min-width: 140px; max-width: 200px;
+  box-shadow: var(--shadow-sm); transition: all 0.3s;
+}
+.stat-card:hover { transform: translateY(-5px); border-color: var(--primary-light); box-shadow: var(--shadow-md); }
+.stat-num { font-family: var(--serif); font-size: clamp(2rem, 5vw, 2.5rem); font-weight: 700; color: var(--primary); line-height: 1; margin-bottom: 8px;}
+.stat-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+
+@keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== SECTION COMMON ===== */
+.section { max-width: 1300px; margin: 0 auto; padding: 6rem 1.5rem; }
+.section-label {
+  font-size: 0.85rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 1rem; display: flex; align-items: center; gap: 12px;
+}
+.section-label::before { content: ''; width: 40px; height: 2px; background: var(--gold); }
+.section-title {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 600;
+  color: var(--text-heading); line-height: 1.1; margin-bottom: 1.5rem;
+}
+.section-title em { color: var(--primary); font-style: italic; font-weight: 600; }
+.section-desc { color: var(--text-muted); font-size: 1.05rem; max-width: 750px; margin-bottom: 3rem; line-height: 1.8; }
+
+/* ===== LOGISTICS ===== */
+.transport-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.transport-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 2rem; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+}
+.transport-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--primary), var(--blue)); }
+.transport-card.train::before { background: linear-gradient(90deg, var(--gold), var(--primary)); }
+.transport-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.transport-title { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; color: var(--text-heading); margin-bottom: 1rem; }
+.transport-detail { font-size: 0.95rem; color: var(--text-main); margin-bottom: 0.8rem; display: flex; align-items: flex-start; gap: 0.5rem; line-height: 1.5; }
+.transport-detail strong { color: var(--primary-dark); white-space: nowrap; min-width: 75px; }
+.cost-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem; background: var(--gold-light);
+  border: 1px solid rgba(217, 119, 6, 0.3); color: #92400e; font-size: 0.9rem; font-weight: 700;
+  padding: 0.5rem 1rem; border-radius: 100px; margin-top: 1rem;
+}
+
+/* ===== MAP SECTION ===== */
+#map-section { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.map-wrapper { padding: 1rem; background: var(--bg-main); border-radius: 24px; border: 1px solid var(--border); box-shadow: inset 0 2px 10px rgba(0,0,0,0.02); }
+#travel-map { width: 100%; height: 60vh; min-height: 400px; border-radius: 16px; z-index: 1; border: 1px solid var(--border); }
+.leaflet-container { background: #e0f2fe !important; font-family: var(--sans); }
+.leaflet-popup-content-wrapper { background: var(--bg-card); color: var(--text-main); border-radius: 12px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
+.leaflet-popup-tip { background: var(--bg-card); border-top: 1px solid var(--border); border-left: 1px solid var(--border); }
+.map-popup-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 4px; }
+.map-legend { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; padding: 0 0.5rem; }
+.legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+.legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+/* ===== ITINERARY ===== */
+.itinerary-grid { display: flex; flex-direction: column; gap: 2rem; position: relative; }
+/* Timeline line */
+.itinerary-grid::before {
+  content: ''; position: absolute; left: 2.5rem; top: 2rem; bottom: 2rem; width: 2px;
+  background: linear-gradient(180deg, var(--primary-light), var(--primary-mid), var(--primary-light)); z-index: 0;
+}
+.day-card { display: flex; gap: 2rem; position: relative; z-index: 1; }
+.day-marker { width: 5rem; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+.day-num {
+  width: 5rem; height: 5rem; border-radius: 50%; background: var(--bg-card); border: 2px solid var(--primary);
+  display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 2rem;
+  font-weight: 700; color: var(--primary); box-shadow: 0 0 0 8px var(--bg-page), var(--shadow-sm); transition: all 0.3s;
+}
+.day-card:hover .day-num { background: var(--primary); color: white; transform: scale(1.05); }
+
+.day-content {
+  flex-grow: 1; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow-sm); transition: all 0.3s;
+}
+.day-card:hover .day-content { box-shadow: var(--shadow-md); border-color: var(--primary-light); transform: translateY(-2px); }
+
+.day-header-wrap { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1.5rem; }
+.day-location { font-size: 0.8rem; color: var(--gold); font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.5rem; }
+.day-title { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; color: var(--text-heading); line-height: 1.2; }
+.day-activities { list-style: none; color: var(--text-main); font-size: 1rem; line-height: 1.8; }
+.day-activities li { margin-bottom: 0.8rem; position: relative; padding-left: 1.5rem; }
+.day-activities li::before { content: '✦'; position: absolute; left: 0; color: var(--primary-mid); font-size: 0.9rem; top: 2px;}
+.day-activities strong { color: var(--text-heading); font-weight: 700; }
+
+.btn-map {
+  background: var(--primary-light); border: 1px solid transparent; color: var(--primary-dark);
+  cursor: pointer; font-family: var(--sans); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em;
+  text-transform: uppercase; padding: 0.6rem 1.2rem; border-radius: 100px; transition: all 0.3s;
+  display: inline-flex; align-items: center; gap: 6px; box-shadow: var(--shadow-sm);
+}
+.btn-map:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+/* Text colors for regions */
+.text-hills { color: var(--primary); }
+.text-backwaters { color: var(--blue); }
+.text-heritage { color: #b45309; }
+.text-beaches { color: var(--gold); }
+
+/* ===== BUDGET CALCULATOR ===== */
+.budget-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: center; background: var(--bg-card); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm);}
+.budget-controls { display: flex; flex-direction: column; gap: 1.5rem; }
+.form-group label { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-heading); margin-bottom: 1rem; }
+.form-group input[type="range"] { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; background: var(--border); border-radius: 3px; outline: none; }
+.form-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: var(--primary); cursor: pointer; box-shadow: var(--shadow-sm); border: 3px solid white; transition: transform 0.1s; }
+.form-group input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.style-toggle { display: flex; gap: 0.5rem; flex-wrap: wrap;}
+.style-btn { flex: 1; min-width: 100px; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-alt); color: var(--text-muted); cursor: pointer; font-family: var(--sans); font-size: 0.9rem; font-weight: 600; transition: all 0.3s; text-align: center; }
+.style-btn.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary-dark); box-shadow: var(--shadow-sm); }
+
+.result-main {
+  text-align: center; background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+  border-radius: var(--radius); padding: 2.5rem 2rem; box-shadow: var(--shadow-md); color: white; position: relative; overflow: hidden;
+}
+.result-main::before { content: '₹'; position: absolute; right: -10px; bottom: -30px; font-size: 200px; font-weight: 700; font-family: var(--serif); opacity: 0.08; line-height: 1; }
+.result-total-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: var(--primary-light); margin-bottom: 0.5rem; position: relative; z-index: 2;}
+.result-total { font-family: var(--serif); font-size: 3.5rem; font-weight: 700; color: white; line-height: 1; margin-bottom: 1.5rem; text-shadow: 0 4px 15px rgba(0,0,0,0.2); position: relative; z-index: 2;}
+.result-pp { font-size: 1rem; color: var(--accent-light); font-weight: 600; background: rgba(255,255,255,0.15); display: inline-block; padding: 0.5rem 1.2rem; border-radius: 100px; }
+.result-breakdown { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.8rem; text-align: left; position: relative; z-index: 2;}
+.breakdown-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; padding-bottom: 0.6rem; border-bottom: 1px dashed rgba(255,255,255,0.2); }
+.breakdown-row:last-child { border-bottom: none; padding-bottom: 0; }
+.breakdown-row .bl { color: var(--primary-light); }
+.breakdown-row .bv { font-weight: 700; font-size: 1rem; }
+
+/* ===== CHECKLIST ===== */
+.checklist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+.checklist-category { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow-sm); }
+.checklist-cat-title { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-light); }
+.checklist-items { display: flex; flex-direction: column; gap: 0.3rem; }
+.check-item { display: flex; align-items: center; gap: 0.8rem; cursor: pointer; padding: 0.6rem; border-radius: var(--radius-sm); transition: all 0.2s; user-select: none; border: 1px solid transparent; }
+.check-item:hover { background: var(--bg-alt); border-color: var(--border); }
+.check-item.checked { opacity: 0.5; background: transparent; border-color: transparent;}
+.check-item.checked .check-text { text-decoration: line-through; }
+.check-box { width: 22px; height: 22px; min-width: 22px; border-radius: 6px; border: 2px solid var(--text-muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; background: var(--bg-card); font-size: 0.8rem; font-weight: bold; color: white; }
+.check-item.checked .check-box { background: var(--primary); border-color: var(--primary); }
+.check-text { font-size: 0.9rem; color: var(--text-heading); transition: all 0.2s; line-height: 1.4;}
+
+.checklist-progress { margin-bottom: 2.5rem; background: var(--bg-card); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;}
+.progress-label { font-size: 1rem; color: var(--text-heading); font-weight: 700; white-space: nowrap; }
+.progress-label span { color: var(--primary); }
+.progress-bar-wrap { flex-grow: 1; min-width: 200px; background: var(--bg-alt); border-radius: 10px; height: 10px; overflow: hidden; border: 1px solid var(--border);}
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--blue), var(--primary)); border-radius: 10px; transition: width 0.5s cubic-bezier(0.23,1,0.32,1); }
+
+/* ===== FOOD & CULTURE ===== */
+#food { background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.food-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+.food-card { display: flex; align-items: flex-start; gap: 1rem; background: var(--bg-page); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: all 0.3s; box-shadow: var(--shadow-sm); }
+.food-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary-light); background: var(--bg-card); }
+.food-emoji { font-size: 2.5rem; background: var(--bg-card); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 16px; flex-shrink: 0; border: 1px solid var(--border); box-shadow: var(--shadow-sm);}
+.food-info h4 { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.3rem; }
+.food-info p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+
+.language-section { background: var(--bg-main); border-radius: var(--radius); padding: 2.5rem; border: 1px solid var(--border); text-align: center;}
+.language-header h3 { font-family: var(--serif); font-size: 2rem; color: var(--text-heading); margin-bottom: 0.5rem; }
+.phrase-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;}
+.phrase-card { background: var(--bg-card); padding: 1.2rem; border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: all 0.2s; }
+.phrase-card:hover { border-color: var(--primary-light); transform: translateY(-2px); }
+.phrase-eng { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+.phrase-ml { color: var(--primary-dark); font-family: var(--serif); font-size: 1.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.3rem; }
+.phrase-pron { font-size: 0.85rem; color: var(--accent); font-weight: 500; }
+
+/* ===== INTERACTIVE FAQ ===== */
+.faq-grid { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+.faq-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; transition: all 0.3s; box-shadow: var(--shadow-sm); }
+.faq-item:hover { border-color: var(--primary-light); box-shadow: var(--shadow-md); }
+.faq-question { width: 100%; text-align: left; padding: 1.2rem 1.5rem; background: transparent; border: none; font-family: var(--sans); font-size: 1.05rem; font-weight: 600; color: var(--text-heading); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: color 0.3s; }
+.faq-question:hover { color: var(--primary); }
+.faq-icon { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-page); display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.2rem; transition: transform 0.4s ease; border: 1px solid var(--border); flex-shrink: 0;}
+.faq-item.active .faq-icon { transform: rotate(45deg); background: var(--primary); color: white; border-color: var(--primary); }
+.faq-answer { max-height: 0; overflow: hidden; padding: 0 1.5rem; color: var(--text-main); font-size: 0.95rem; line-height: 1.7; transition: all 0.4s ease; opacity: 0; }
+.faq-item.active .faq-answer { max-height: 500px; padding: 0 1.5rem 1.2rem; opacity: 1; }
+
+/* ===== FOOTER ===== */
+footer { text-align: center; padding: 4rem 1.5rem; background: var(--text-heading); color: var(--text-muted); font-size: 0.9rem; }
+footer h3 { font-family: var(--serif); font-size: 2.5rem; color: var(--primary-light); font-weight: 400; margin-bottom: 1rem; }
+footer p { max-width: 600px; margin: 0 auto; line-height: 1.8; }
+.divider-foot { width: 40px; height: 1px; background: rgba(255,255,255,0.2); margin: 1.5rem auto; }
+
+/* ===== FLOATERS ===== */
+#backToTop { position: fixed; bottom: 20px; right: 20px; background: var(--text-heading); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; box-shadow: var(--shadow-float); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000; display: flex; align-items: center; justify-content: center; transform: translateY(20px); }
+#backToTop.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+#backToTop:hover { background: var(--primary); transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+
+.fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+.fade-in.visible { opacity: 1; transform: none; }
+
+/* ===== RESPONSIVE & MOBILE FIXES ===== */
+@media (max-width: 1024px) {
+  .nav-links { display: none; }
+  .day-header-wrap { flex-direction: column; align-items: flex-start; }
+  .btn-map { align-self: flex-start; }
+}
+@media (max-width: 768px) {
+  .hero-title { font-size: 3.5rem; }
+  .section { padding: 4rem 1.5rem; }
+  .budget-layout { grid-template-columns: 1fr; gap: 2rem; padding: 1.5rem;}
+  .result-main { padding: 2rem 1.5rem; }
+  .result-total { font-size: 3rem; }
+  
+  /* Timeline Fixes for Mobile */
+  .itinerary-grid::before { left: 1.5rem; }
+  .day-card { gap: 1rem; }
+  .day-marker { width: 3rem; }
+  .day-num { width: 3rem; height: 3rem; font-size: 1.2rem; box-shadow: 0 0 0 4px var(--bg-page); border-width: 2px;}
+  .day-content { padding: 1.5rem; }
+  .day-activities li { font-size: 0.95rem; }
+  
+  .filter-bar { justify-content: center; }
+  #travel-map { height: 50vh; min-height: 350px; }
+}
+@media (max-width: 480px) {
+  .hero-stats { gap: 0.8rem; }
+  .stat-card { min-width: 100%; padding: 1rem; }
+  .transport-grid { grid-template-columns: 1fr; }
+  .transport-card { padding: 1.5rem; }
+  .style-toggle { flex-direction: column; }
+  .checklist-grid { grid-template-columns: 1fr; }
+  .food-grid { grid-template-columns: 1fr; }
+  .btn-pdf { font-size: 0.75rem; padding: 0.5rem 1rem; }
+  .nav-brand { font-size: 1.3rem; }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  body { background: white !important; color: black !important; font-size: 11pt; }
+  .hero, #navbar, .map-wrapper, #progress-container, .btn-map, .btn-pdf, #backToTop, .budget-controls, .hero-waves { display: none !important; }
+  .section { padding: 2rem 0 !important; }
+  .section-title { color: black !important; font-size: 24pt !important; }
+  .card, .day-card, .faq-item, .checklist-category, .food-card, .phrase-card { border: 1px solid #ccc !important; box-shadow: none !important; break-inside: avoid; background: white !important; }
+  .day-content { border: none !important; padding: 1rem 0 !important; }
+  .day-num { border: 1px solid black !important; background: white !important; color: black !important; box-shadow: none !important; }
+  .itinerary-grid::before { display: none !important; }
+  .faq-answer { max-height: none !important; opacity: 1 !important; padding-bottom: 1rem !important; }
+  .result-main { background: white !important; color: black !important; border: 1px solid #ccc; box-shadow: none;}
+  .result-total, .result-total-label, .breakdown-row .bv, .breakdown-row .bl { color: black !important; text-shadow: none;}
+  @page { margin: 1cm; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-container"><div id="progress-bar"></div></div>
+<button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" aria-label="Scroll to Top">↑</button>
+
+<!-- ══ NAVBAR ══ -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-brand">🌿 Kerala Expedition</a>
+    <ul class="nav-links">
+      <li><a href="#logistics">Transit</a></li>
+      <li><a href="#map-section">Map</a></li>
+      <li><a href="#itinerary">Itinerary</a></li>
+      <li><a href="#budget">Budget</a></li>
+      <li><a href="#checklist">Packing</a></li>
+      <li><a href="#food">Culture</a></li>
+      <li><a href="#safety">FAQs</a></li>
+    </ul>
+    <button class="btn-pdf" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+      Save PDF
+    </button>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-pattern"></div>
+  <div class="hero-gradient"></div>
+  <div class="hero-waves">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" fill="none"><path d="M0 40 Q180 0 360 40 Q540 80 720 40 Q900 0 1080 40 Q1260 80 1440 40 L1440 80 L0 80 Z"/></svg>
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" fill="none"><path d="M0 50 Q180 10 360 50 Q540 90 720 50 Q900 10 1080 50 Q1260 90 1440 50 L1440 80 L0 80 Z"/></svg>
+  </div>
+  <div class="hero-content">
+    <div class="hero-label">The Grand Circuit 2025</div>
+    <h1 class="hero-title">God's Own<br><span>Country</span></h1>
+    <p class="hero-subtitle">Surat to Kerala — A highly detailed 10-day expedition spanning colonial shores, misty tea estates, wild tiger reserves, and emerald backwaters.</p>
+    <div class="hero-stats">
+      <div class="stat-card"><div class="stat-num">10</div><div class="stat-label">Days Trip</div></div>
+      <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Unique Regions</div></div>
+      <div class="stat-card"><div class="stat-num">1.7k</div><div class="stat-label">KM from Surat</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ LOGISTICS ══ -->
+<section id="logistics" class="section fade-in">
+  <div class="section-label">Getting There</div>
+  <h2 class="section-title">Logistics &amp; <em>Transit</em></h2>
+  <p class="section-desc">Travel from Gujarat to Kerala involves a long but beautiful coastal train ride, or a fast flight connection into Kochi (Cochin). Both have their unique charms.</p>
+
+  <div class="transport-grid">
+    <!-- FLIGHT -->
+    <div class="card transport-card" style="border-color: var(--blue-light);">
+      <div class="transport-icon" style="color: var(--blue);">✈️</div>
+      <div class="transport-title">Flight — Recommended</div>
+      <div class="transport-detail"><strong>Route:</strong> Surat (STV) → Kochi (COK)</div>
+      <div class="transport-detail"><strong>Airlines:</strong> IndiGo, Air India (Usually 1 stop via BOM/BLR)</div>
+      <div class="transport-detail"><strong>Duration:</strong> 2.5–4.5 hrs total (layover included)</div>
+      <div class="transport-detail"><strong>Why:</strong> Saves 2 full days of travel. Arrive fresh in Kochi to start the expedition immediately. Book 4-6 weeks early.</div>
+      <div class="cost-pill" style="background: var(--blue-light); border-color: #bae6fd; color: var(--blue);">💰 ₹5,000–₹9,000 one-way</div>
+    </div>
+
+    <!-- TRAIN -->
+    <div class="card transport-card train">
+      <div class="transport-icon" style="color: var(--gold);">🚂</div>
+      <div class="transport-title">Train — Scenic Coast</div>
+      <div class="transport-detail"><strong>Route:</strong> Surat → Ernakulam Jn. (Kochi)</div>
+      <div class="transport-detail"><strong>Trains:</strong> Mumbai–ERS Exp (12617), Rajkot-Trivandrum (16335)</div>
+      <div class="transport-detail"><strong>Duration:</strong> ~36–42 hrs along the Konkan Coast</div>
+      <div class="transport-detail"><strong>Why:</strong> A budget-friendly option with beautiful views of Goan rivers and Karnataka forests. Book 3A/2A on IRCTC 60 days in advance.</div>
+      <div class="cost-pill" style="background: var(--gold-light); border-color: #fde68a; color: var(--gold);">💰 ₹900–₹3,200 (SL to 2A)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MAP ══ -->
+<section id="map-section" class="fade-in">
+  <div class="section">
+    <div class="section-label">Topography</div>
+    <h2 class="section-title">Interactive <em>Expedition Map</em></h2>
+    <p class="section-desc">Trace the 10-day circuit. Zoom in to explore the transition from the historic port of Kochi up to the high-altitude Western Ghats, down to the backwaters, and finishing at the southern beaches.</p>
+    <div class="map-wrapper">
+      <div id="travel-map"></div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Starting Point</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#0284c7"></div>Backwaters</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Hill Stations</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#b45309"></div>Heritage</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Wildlife</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ITINERARY ══ -->
+<section id="itinerary" class="section fade-in">
+  <div class="section-label">The Grand Circuit</div>
+  <h2 class="section-title">10-Day <em>Itinerary</em></h2>
+  <p class="section-desc">An extended, unhurried journey through Kerala's absolute best offerings. Designed to limit drive times and maximize cultural immersion. Best done between October and March.</p>
+
+  <div class="itinerary-grid">
+    <!-- Day 1 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">01</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location text-heritage">Arrival & Heritage</div>
+            <div class="day-title">Surat → Fort Kochi</div>
+          </div>
+          <button class="btn-map" onclick="flyTo(9.9312, 76.2673, 14, 'Fort Kochi — Heritage Walk')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Transit:</strong> Arrive at Kochi (COK) via flight. Transfer to a boutique heritage hotel in Fort Kochi (1.5 hrs from airport).</li>
+          <li><strong>Afternoon:</strong> Walk the cobblestone streets. Visit the 16th-century Pardesi Synagogue and the intricate murals of the Dutch Palace in Jew Town.</li>
+          <li><strong>Sunset:</strong> Watch the iconic, giant cantilevered Chinese Fishing Nets being lowered into the Arabian Sea at Vasco da Gama Square.</li>
+          <li><strong>Dinner:</strong> Fresh Arabian Sea catch cooked right on the promenade, paired with Kerala parotta.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 2 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">02</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location text-hills">The Ascent (130 km)</div>
+            <div class="day-title">Kochi → Munnar</div>
+          </div>
+          <button class="btn-map" onclick="flyTo(10.0889, 77.0595, 12, 'Munnar — Tea Estates')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Morning:</strong> Begin the 4-hour scenic drive up the winding Western Ghats. The temperature drops noticeably as you climb.</li>
+          <li><strong>En Route:</strong> Stop at the spectacular Cheeyappara and Valara Waterfalls roaring down the mountainside right next to the highway.</li>
+          <li><strong>Afternoon:</strong> Check into a hillside resort. Visit the KDHP Tata Tea Museum to learn the history of Nilgiri tea and taste fresh brews.</li>
+          <li><strong>Evening:</strong> Relax in the cool mountain air (often dropping to 12-15°C).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 3 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">03</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location text-hills">High Altitude Exploration</div>
+            <div class="day-title">Munnar Peaks & Wildlife</div>
+          </div>
+          <button class="btn-map" onclick="flyTo(10.1640, 77.0590, 13, 'Eravikulam National Park')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Early Morning:</strong> Take a government bus safari into Eravikulam National Park to spot the endangered Nilgiri Tahr mountain goats roaming the slopes.</li>
+          <li><strong>Mid-day:</strong> Visit Mattupetty Dam for speed boating on the pristine lake, and shout your name at Echo Point for perfect valley acoustics.</li>
+          <li><strong>Afternoon:</strong> Drive up to Top Station (the highest point in Munnar at 1,700m) for panoramic views stretching into the neighboring plains of Tamil Nadu.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 4 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">04</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location text-heritage" style="color: #8b5cf6;">The Spice Capital (90 km)</div>
+            <div class="day-title">Munnar → Thekkady</div>
+          </div>
+          <button class="btn-map" onclick="flyTo(9.5833, 77.1667, 13, 'Thekkady — Spice Plantations')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Morning:</strong> Drive down to Thekkady. The air here smells intensely of cardamom, cloves, and black pepper.</li>
+          <li><strong>Afternoon:</strong> Take a guided Spice Plantation tour. See vanilla vines, cinnamon bark, coffee, and nutmeg growing in their natural wild habitat.</li>
+          <li><strong>Evening:</strong> Attend a thrilling Kalaripayattu (ancient martial arts) show or a vibrant Kathakali dance-drama performance in Kumily town.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 5 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">05</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location text-heritage" style="color: #8b5cf6;">Periyar Tiger Reserve</div>
+            <div class="day-title">Jungle Safari & Ayurveda</div>
+          </div>
+          <button class="btn-map" onclick="flyTo(9.5500, 77.2000, 13, 'Periyar Lake Safari')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Early Morning:</strong> Take the famous boat safari on Periyar Lake. This is your best chance to spot wild elephant herds, bison, and sambar deer drinking at the water's edge.</li>
+          <li><strong>Alternative:</strong> For adventure seekers, opt for a guided jungle trek or bamboo rafting deep into the tiger reserve (book via Forest Dept).</li>
+          <li><strong>Afternoon:</strong> Give your body a rest. Indulge in an authentic 90-minute Kerala Ayurvedic Abhyanga massage using medicated warm oils.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 6 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">06</div></div>
+      <div class="day-content" style="border: 2px solid var(--blue); background: var(--blue-light);">
+        <div class="day-header-wrap" style="border-bottom-color: rgba(2,132,199,0.15);">
+          <div>
+            <div class="day-location" style="color: var(--blue);">Venice of the East (140 km)</div>
+            <div class="day-title" style="color: var(--text-heading);">Thekkady → Alleppey Houseboat</div>
+          </div>
+          <button class="btn-map" style="background: white; border-color: var(--blue); color: var(--blue);" onclick="flyTo(9.4981, 76.3388, 13, 'Alleppey — Backwaters')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>12:00 PM:</strong> Drive down from the hills to Alleppey. Board your private Kettuvallam (traditional wooden houseboat).</li>
+          <li><strong>Cruise:</strong> Glide slowly through the vast Vembanad Lake, narrow palm-fringed canals, and paddy fields located below sea level.</li>
+          <li><strong>Dining:</strong> Enjoy traditional meals (Karimeen fry, tapioca, banana fritters) cooked fresh by your personal onboard chef.</li>
+          <li><strong>Night:</strong> The boat docks at sunset. Sleep on the gentle waters under the stars—an unforgettable experience.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 7 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">07</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location text-beaches">Giant Bird & Cliff Beach (110 km)</div>
+            <div class="day-title">Alleppey → Jatayu → Varkala</div>
+          </div>
+          <button class="btn-map" onclick="flyTo(8.7334, 76.7013, 13, 'Varkala Cliff Beach')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Morning:</strong> Disembark houseboat after breakfast. Drive south along the coastal highway.</li>
+          <li><strong>En Route:</strong> Stop at Jatayu Earth's Center. Take the modern cable car to the mountaintop to see the world's largest bird sculpture.</li>
+          <li><strong>Afternoon:</strong> Arrive at Varkala — India's only cliff-side beach. Settle into a clifftop resort.</li>
+          <li><strong>Evening:</strong> Watch the sunset from the bohemian North Cliff cafes with stunning Arabian sea panoramas below.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 8 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">08</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location text-beaches">Mangroves & Golden Sands (60 km)</div>
+            <div class="day-title">Varkala → Poovar Island</div>
+          </div>
+          <button class="btn-map" onclick="flyTo(8.3167, 77.0667, 13, 'Poovar — Mangrove Estuary')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Morning:</strong> Relax on Varkala beach, swim in the natural springs, or take a surfing lesson in the gentle waves.</li>
+          <li><strong>Afternoon:</strong> Drive further south to Poovar Island, a unique ecosystem where the river, lake, backwaters, and sea meet.</li>
+          <li><strong>Activity:</strong> Take a serene motorboat ride through the dense, dark mangrove forests to reach the isolated Golden Sand Beach estuary.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 9 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">09</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location text-heritage">The Capital City (30 km)</div>
+            <div class="day-title">Poovar → Trivandrum</div>
+          </div>
+          <button class="btn-map" onclick="flyTo(8.5241, 76.9366, 13, 'Trivandrum — Capital City')">📍 View on Map</button>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Morning:</strong> Drive to Thiruvananthapuram (Trivandrum), the historic capital of Kerala.</li>
+          <li><strong>Temple:</strong> Visit the incredibly wealthy Sree Padmanabhaswamy Temple (strict dress code: Mundus/Dhotis for men, Sarees for women).</li>
+          <li><strong>Heritage:</strong> Explore the stunning Indo-Saracenic architecture of the Napier Museum and Kuthiramalika Palace.</li>
+          <li><strong>Shopping:</strong> Buy authentic Kerala spices, cashew nuts, and handloom Kasavu sarees at the bustling Chalai Market.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Day 10 -->
+    <div class="day-card">
+      <div class="day-marker"><div class="day-num">10</div></div>
+      <div class="day-content">
+        <div class="day-header-wrap">
+          <div>
+            <div class="day-location">Homeward Bound</div>
+            <div class="day-title">Trivandrum → Surat</div>
+          </div>
+        </div>
+        <ul class="day-activities">
+          <li><strong>Morning:</strong> Enjoy a final classic Kerala breakfast of Puttu (steamed rice cake) and Kadala (black chickpea) curry.</li>
+          <li><strong>Transit:</strong> Transfer to Trivandrum International Airport (TRV) or the Central Railway Station.</li>
+          <li><strong>End of Trip:</strong> Return to Gujarat with unforgettable memories, rejuvenated by the slow pace of God's Own Country.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LIVE BUDGET CALCULATOR -->
+<section id="budget" class="section fade-in">
+  <div class="section-label">Cost Planner</div>
+  <h2 class="section-title">Live Budget <em>Calculator</em></h2>
+  <p class="section-desc">Group travel cuts down the cost of private cabs and houseboats significantly. Adjust the parameters below for a real-time estimate.</p>
+
+  <div class="budget-layout">
+    <div class="budget-controls">
+      <div class="form-group">
+        <label>Number of Travellers: <span id="traveller-display" style="color:var(--primary)">2</span></label>
+        <input type="range" id="travellers" min="1" max="10" value="2" oninput="updateBudget()"/>
+      </div>
+      <div class="form-group">
+        <label>Travel Style</label>
+        <div class="style-toggle">
+          <button class="style-btn active" data-style="budget" onclick="setStyle('budget', this)">🎒 Budget (Train)</button>
+          <button class="style-btn" data-style="comfort" onclick="setStyle('comfort', this)">🏨 Comfort (Flight)</button>
+          <button class="style-btn" data-style="luxury" onclick="setStyle('luxury', this)">👑 Luxury</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Trip Duration</label>
+        <div class="style-toggle">
+          <button class="style-btn" data-nights="7" onclick="setNights(7, this)">7 Nights</button>
+          <button class="style-btn active" data-nights="9" onclick="setNights(9, this)">9 Nights (10D)</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Include Houseboat Night: <span id="houseboat-display" style="color:var(--primary)">Yes</span></label>
+        <input type="range" id="houseboat" min="0" max="1" step="1" value="1" oninput="updateBudget()"/>
+      </div>
+      <div class="form-group">
+        <label>Include Ayurveda Massage: <span id="ayur-display" style="color:var(--primary)">Yes</span></label>
+        <input type="range" id="ayurveda" min="0" max="1" step="1" value="1" oninput="updateBudget()"/>
+      </div>
+    </div>
+
+    <div class="result-main">
+      <div class="result-total-label">Estimated Total (Per Person)</div>
+      <div class="result-total" id="pp-display">₹0</div>
+      <div class="result-total-label" style="color: rgba(255,255,255,0.7); margin-top: 1rem;">Group Total</div>
+      <div style="font-size: 2rem; color: var(--gold-light); font-weight: 700; margin-bottom: 2rem;" id="total-display">₹0</div>
+      
+      <div class="result-breakdown">
+        <div class="breakdown-row"><span class="bl">Transit & Local Cabs</span><span class="bv" id="b-transport">₹0</span></div>
+        <div class="breakdown-row"><span class="bl">Hotels</span><span class="bv" id="b-hotel">₹0</span></div>
+        <div class="breakdown-row"><span class="bl">Food & Drinks</span><span class="bv" id="b-food">₹0</span></div>
+        <div class="breakdown-row"><span class="bl">Activities & Tickets</span><span class="bv" id="b-activities">₹0</span></div>
+        <div class="breakdown-row" id="row-houseboat"><span class="bl">Houseboat</span><span class="bv" id="b-houseboat">₹0</span></div>
+        <div class="breakdown-row" id="row-ayur"><span class="bl">Ayurveda</span><span class="bv" id="b-ayur">₹0</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHECKLIST -->
+<section id="checklist" class="section fade-in">
+  <div class="section-label">Be Prepared</div>
+  <h2 class="section-title">Interactive <em>Checklist</em></h2>
+  <p class="section-desc">Kerala is tropical and humid. Light breathables are key — but pack a fleece for Munnar's misty nights (15–20°C). Click items to mark as packed.</p>
+
+  <div class="checklist-progress">
+    <div class="progress-label">Packed <span><span id="packed-count">0</span> / <span id="total-count">0</span></span> items</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="pack-progress" style="width:0%"></div></div>
+  </div>
+
+  <div class="checklist-grid" id="checklist-container"></div>
+</section>
+
+<!-- FOOD & CULTURE -->
+<section id="food" class="section fade-in" style="background: var(--bg-card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); max-width: 100%;">
+  <div style="max-width: 1400px; margin: 0 auto;">
+    <div class="section-label">Flavours & Phrases</div>
+    <h2 class="section-title">Food, Culture & <em>Language</em></h2>
+    <p class="section-desc">Kerala's cuisine is a love letter to coconut, spices, and the sea. Learn a few Malayalam phrases — locals will absolutely love the effort.</p>
+
+    <div class="food-grid">
+      <div class="food-card">
+        <span class="food-emoji">🐟</span>
+        <div>
+          <h4 class="food-name">Karimeen Pollichathu</h4>
+          <p class="food-desc">Pearl spot fish wrapped in banana leaf and slow-cooked with chilli, ginger, coconut paste. The queen of Kerala cuisine.</p>
+        </div>
+      </div>
+      <div class="food-card">
+        <span class="food-emoji">🍛</span>
+        <div>
+          <h4 class="food-name">Kerala Sadhya</h4>
+          <p class="food-desc">A 20+ dish vegetarian feast served on banana leaf. Rice with avial, sambar, payasam, thoran, pickles.</p>
+        </div>
+      </div>
+      <div class="food-card">
+        <span class="food-emoji">🥞</span>
+        <div>
+          <h4 class="food-name">Appam & Stew</h4>
+          <p class="food-desc">Lacy rice-flour hoppers with a crispy edge and soft centre, served with coconut milk vegetable or chicken stew.</p>
+        </div>
+      </div>
+      <div class="food-card">
+        <span class="food-emoji">🍌</span>
+        <div>
+          <h4 class="food-name">Puttu & Kadala</h4>
+          <p class="food-desc">Steamed rice cylinders layered with coconut, served with a robust black chickpea curry. The classic breakfast.</p>
+        </div>
+      </div>
+      <div class="food-card">
+        <span class="food-emoji">🍮</span>
+        <div>
+          <h4 class="food-name">Palada Payasam</h4>
+          <p class="food-desc">Creamy rice flakes kheer cooked in milk and sweetened condensed milk. A divine, comforting dessert.</p>
+        </div>
+      </div>
+      <div class="food-card">
+        <span class="food-emoji">☕</span>
+        <div>
+          <h4 class="food-name">Kerala Filter Coffee</h4>
+          <p class="food-desc">Strong dark decoction poured dramatically between glasses. Better than any modern café.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="language-section">
+      <div class="language-header">
+        <h3>🗣 Malayalam Cheat Sheet</h3>
+        <p style="color: var(--text-muted);">Pronounce phonetically. A little effort goes a long way!</p>
+      </div>
+      <div class="phrase-grid">
+        <div class="phrase-card">
+          <div class="phrase-eng">Hello / Greetings</div>
+          <div class="phrase-ml">നമസ്കാരം</div>
+          <div class="phrase-pron">Namaskaram (nah-mas-KAH-rum)</div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-eng">Thank you</div>
+          <div class="phrase-ml">നന്നി</div>
+          <div class="phrase-pron">Nanni (NAHN-nee)</div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-eng">How much is this?</div>
+          <div class="phrase-ml">എത്ര ആണ് വില?</div>
+          <div class="phrase-pron">Ethra aanu vila?</div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-eng">Very Delicious!</div>
+          <div class="phrase-ml">നല്ല രുചിയുണ്ട്</div>
+          <div class="phrase-pron">Nalla ruchiyundu!</div>
+        </div>
+        <div class="phrase-card">
+          <div class="phrase-eng">Where is the...?</div>
+          <div class="phrase-ml">...എവിടെ ആണ്?</div>
+          <div class="phrase-pron">...evide aanu?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQs & SAFETY -->
+<section id="safety" class="section fade-in">
+  <div class="section-label">Stay Smart</div>
+  <h2 class="section-title">FAQs & <em>Safety Guide</em></h2>
+  <p class="section-desc">Kerala is highly literate and safe for tourists, but these tips will ensure a flawless 10-day trip without any hiccups.</p>
+
+  <div class="faq-grid">
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        What is the dress code for Kerala Temples?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Kerala temples are very strict regarding attire. <strong>Men must remove their shirts</strong> and wear a traditional Dhoti (Mundu). <strong>Women must wear long skirts, sarees, or Salwar Kameez</strong>. Pants, jeans, shorts, and dresses are strictly prohibited inside inner sanctums like the Sree Padmanabhaswamy Temple.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        How do the Houseboat Air Conditioning rules work?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Standard houseboats in Alleppey <strong>only turn on the Air Conditioning inside the bedrooms from 9:00 PM to 6:00 AM</strong>. During the day, you sit in the open-air shaded deck. If you want full-time AC while cruising, you must specifically book a "Premium/Luxury Full-Time AC" houseboat, which costs significantly more.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        What are the liquor laws in Kerala?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        Alcohol is strictly regulated. You cannot buy it in normal supermarkets. It is only sold at government-run 'BEVCO' outlets (which have massive queues) or served in licensed 4/5-star hotels and beer parlors. Houseboats do not sell alcohol, but you are usually allowed to carry your own onboard.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        Is it safe to travel during the Monsoons?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        The monsoon (June to August) transforms Kerala into a lush, vibrant green paradise, and is historically the best time for Ayurvedic treatments. However, heavy rains can cause landslides in the Munnar hills and disrupt houseboat operations. If you travel then, keep your itinerary flexible. The best standard season for sightseeing is October to March.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <button class="faq-question" onclick="toggleFaq(this)">
+        How do I get around locally? Do autos use meters?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">
+        In major cities like Kochi and Trivandrum, you can easily use Uber and Ola. For Auto-rickshaws, always insist on the meter before getting in. If they refuse, agree on a price beforehand to avoid arguments. For inter-city travel (like Kochi to Munnar), pre-booking an AC tourist taxi or using the reliable KSRTC Volvo buses is recommended.
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <h3>God's Own Country</h3>
+  <p>Crafted with care for travellers from <strong>Surat to Kerala</strong>. From the misty tea hills to the serene backwaters, may your 10-day expedition be unforgettable.</p>
+  <div class="divider-foot"></div>
+  <p style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;">A Premium Travel Experience</p>
+</footer>
+
+<script>
+// ===== NAVBAR SCROLL & PROGRESS BAR =====
+window.addEventListener('scroll', () => {
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  document.getElementById("progress-bar").style.width = (winScroll / height) * 100 + "%";
+  
+  const nav = document.getElementById("navbar");
+  if (winScroll > 50) nav.classList.add("scrolled");
+  else nav.classList.remove("scrolled");
+
+  const backToTopBtn = document.getElementById("backToTop");
+  if (winScroll > 400) backToTopBtn.classList.add("visible");
+  else backToTopBtn.classList.remove("visible");
+});
+
+// ===== ACTIVE NAV HIGHLIGHTING =====
+const sections = document.querySelectorAll('section[id], div[id="map-section"]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 150) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+});
+
+// ===== FADE-IN OBSERVER =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) setTimeout(() => entry.target.classList.add('visible'), i * 80);
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+// ===== LEAFLET MAP =====
+let map;
+const destinations = [
+  { name: 'Surat', lat: 21.1702, lng: 72.8311, color: '#d97706', icon: '🏙' },
+  { name: 'Fort Kochi', lat: 9.9312, lng: 76.2673, color: '#059669', icon: '⛵' },
+  { name: 'Munnar', lat: 10.0889, lng: 77.0595, color: '#059669', icon: '🍃' },
+  { name: 'Thekkady', lat: 9.5833, lng: 77.1667, color: '#059669', icon: '🐘' },
+  { name: 'Alleppey', lat: 9.4981, lng: 76.3388, color: '#0284c7', icon: '🚢' },
+  { name: 'Varkala', lat: 8.7334, lng: 76.7013, color: '#059669', icon: '🏖' },
+  { name: 'Poovar', lat: 8.3167, lng: 77.0667, color: '#059669', icon: '🌴' },
+  { name: 'Trivandrum', lat: 8.5241, lng: 76.9366, color: '#059669', icon: '🛕' },
+];
+
+function createMarkerIcon(emoji, color) {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:44px;height:44px;border-radius:50%;
+      background:${color};border:3px solid #fff;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 6px 15px rgba(0,0,0,0.2);
+    "><span style="font-size:20px">${emoji}</span></div>`,
+    iconSize: [44, 44], iconAnchor: [22, 22], popupAnchor: [0, -25]
+  });
+}
+
+function initMap() {
+  map = L.map('travel-map', { center: [12.5, 76.5], zoom: 6, scrollWheelZoom: false });
+
+  // Light, clean map tiles (Voyager)
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CartoDB', subdomains: 'abcd', maxZoom: 19
+  }).addTo(map);
+
+  const coords = destinations.map(d => [d.lat, d.lng]);
+  // Flight/Train line
+  L.polyline([coords[0], coords[1]], { color: '#0284c7', weight: 3, opacity: 0.6, dashArray: '8, 8' }).addTo(map);
+  // Kerala Circuit line
+  L.polyline(coords.slice(1), { color: '#059669', weight: 4, opacity: 0.9 }).addTo(map);
+
+  destinations.forEach((dest, i) => {
+    L.marker([dest.lat, dest.lng], { icon: createMarkerIcon(dest.icon, dest.color) }).addTo(map)
+      .bindPopup(`
+        <div style="text-align:center;">
+          <div class="map-popup-title">${dest.name}</div>
+        </div>
+      `);
+  });
+}
+
+function flyTo(lat, lng, zoom, label) {
+  document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => {
+    map.flyTo([lat, lng], zoom, { animate: true, duration: 1.5 });
+    L.popup({ maxWidth: 220 })
+      .setLatLng([lat, lng])
+      .setContent(`<div style="text-align:center;"><strong class="map-popup-title" style="font-size:1rem;">📍 ${label}</strong></div>`)
+      .openOn(map);
+  }, 600);
+}
+
+window.addEventListener('load', initMap);
+
+// ===== LIVE BUDGET CALCULATOR =====
+let travelStyle = 'budget';
+let tripNights = 9;
+
+const rates = {
+  budget: { transport: 4000, hotel: 1500, food: 700, activities: 1000, misc: 1000, hb: 4500, ayur: 1500 },
+  comfort: { transport: 9500, hotel: 4000, food: 1500, activities: 2000, misc: 2500, hb: 9000, ayur: 3500 },
+  luxury: { transport: 15000, hotel: 8000, food: 3000, activities: 4000, misc: 5000, hb: 18000, ayur: 8000 }
+};
+
+function setStyle(style, btn) {
+  travelStyle = style;
+  btn.parentElement.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateBudget();
+}
+
+function setNights(n, btn) {
+  tripNights = n;
+  btn.parentElement.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateBudget();
+}
+
+function fmt(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+
+function updateBudget() {
+  const travellers = parseInt(document.getElementById('travellers').value);
+  const hbFlag = parseInt(document.getElementById('houseboat').value);
+  const ayurFlag = parseInt(document.getElementById('ayurveda').value);
+  
+  document.getElementById('traveller-display').textContent = travellers;
+
+  const r = rates[travelStyle];
+  
+  // Logic: Transport gets cheaper per person if sharing cab (simulated)
+  let transportPP = r.transport + (5000 / travellers); 
+  // Logic: Hotels shared between 2 people
+  let hotelPP = (r.hotel * tripNights) / Math.min(2, travellers); 
+  let foodPP = r.food * (tripNights + 1);
+  let actPP = r.activities;
+  let hbPP = hbFlag ? (r.hb / Math.min(2, travellers)) : 0;
+  let ayurPP = ayurFlag ? r.ayur : 0;
+  
+  let totalPP = transportPP + hotelPP + foodPP + actPP + hbPP + ayurPP + r.misc;
+  let totalGroup = totalPP * travellers;
+
+  document.getElementById('b-transport').textContent = fmt(transportPP * travellers);
+  document.getElementById('b-hotel').textContent = fmt(hotelPP * travellers);
+  document.getElementById('b-food').textContent = fmt((foodPP + actPP + r.misc) * travellers);
+  
+  // Visibility toggles
+  const rowHb = document.getElementById('row-houseboat');
+  const rowAyur = document.getElementById('row-ayur');
+  
+  if(hbFlag) { rowHb.style.display = 'flex'; document.getElementById('b-houseboat').textContent = fmt(hbPP * travellers); }
+  else { rowHb.style.display = 'none'; }
+  
+  if(ayurFlag) { rowAyur.style.display = 'flex'; document.getElementById('b-ayur').textContent = fmt(ayurPP * travellers); }
+  else { rowAyur.style.display = 'none'; }
+  
+  document.getElementById('pp-display').textContent = fmt(totalPP);
+  document.getElementById('total-display').textContent = fmt(totalGroup);
+}
+updateBudget();
+
+// ===== INTERACTIVE PACKING CHECKLIST =====
+const checklistData = [
+  {
+    cat: '👗 Clothing & Wear',
+    items: ['Light cotton t-shirts (5–6)', 'Linen shirts/kurtas (2)', 'Shorts & light trousers', 'Swimwear / beachwear', 'Light jacket for Munnar (15°C)', 'Comfortable sandals']
+  },
+  {
+    cat: '🎒 Essentials & Docs',
+    items: ['National ID / Aadhaar card', 'Train/flight tickets (digital)', 'Travel insurance docs', 'Emergency cash (₹5,000+)', 'Power bank (20,000 mAh)']
+  },
+  {
+    cat: '🌿 Health & Nature',
+    items: ['Mosquito repellent (DEET)', 'Sunscreen SPF 50+', 'Oral rehydration salts (ORS)', 'Motion sickness pills (hills)', 'Reusable water bottle', 'Waterproof dry bag']
+  }
+];
+
+function renderChecklist() {
+  const container = document.getElementById('checklist-container');
+  container.innerHTML = '';
+  checklistData.forEach(cat => {
+    const div = document.createElement('div');
+    div.className = 'checklist-category';
+    div.innerHTML = `<div class="checklist-cat-title">${cat.cat}</div><div class="checklist-items">
+      ${cat.items.map(item => `
+        <div class="check-item" onclick="toggleCheck(this)">
+          <div class="check-box"></div>
+          <span class="check-text">${item}</span>
+        </div>`).join('')}
+    </div>`;
+    container.appendChild(div);
+  });
+  document.getElementById('total-count').textContent = document.querySelectorAll('.check-item').length;
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  updateProgress();
+}
+
+function updateProgress() {
+  const all = document.querySelectorAll('.check-item').length;
+  const done = document.querySelectorAll('.check-item.checked').length;
+  document.getElementById('packed-count').textContent = done;
+  document.getElementById('pack-progress').style.width = (done / all * 100) + '%';
+}
+renderChecklist();
+
+// ===== FAQ ACCORDION =====
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  const isActive = item.classList.contains('active');
+  document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('active'));
+  if (!isActive) item.classList.add('active');
+}
+</script>
+</body>
+</html>
